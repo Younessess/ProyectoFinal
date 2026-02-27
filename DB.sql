@@ -1,175 +1,176 @@
-CREATE TABLE usuarios (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_usuario VARCHAR(50) NOT NULL,
-    contraseña_hash VARCHAR(255) NOT NULL,
-    rol ENUM('admin', 'entrenador', 'analista') NOT NULL,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'coach', 'analyst') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE temporadas (
-    id_temporada INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(20) NOT NULL,
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    activa TINYINT(1) DEFAULT 0
+CREATE TABLE seasons (
+    id_season INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(20) NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    is_active TINYINT(1) DEFAULT 0
 );
 
-CREATE TABLE posiciones (
-    codigo_posicion VARCHAR(10) PRIMARY KEY,
-    nombre_posicion VARCHAR(50) NOT NULL,
-    linea ENUM('defensa', 'medio', 'ataque') NOT NULL
+CREATE TABLE positions (
+    position_code VARCHAR(10) PRIMARY KEY,
+    position_name VARCHAR(50) NOT NULL,
+    line ENUM('defense', 'midfield', 'attack') NOT NULL
 );
 
-CREATE TABLE jugadores (
-    id_jugador INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100) NOT NULL,
-    alias VARCHAR(50),
-    posicion_habitual VARCHAR(10),
-    estado ENUM('activo', 'lesionado', 'baja') DEFAULT 'activo',
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE players (
+    id_player INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    nickname VARCHAR(50),
+    usual_position VARCHAR(10),
+    status ENUM('active', 'injured', 'retired') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE dorsales_jugador (
-    id_dorsal INT AUTO_INCREMENT PRIMARY KEY,
-    id_jugador INT,
-    id_temporada INT,
-    dorsal INT,
-    FOREIGN KEY (id_jugador) REFERENCES jugadores(id_jugador),
-    FOREIGN KEY (id_temporada) REFERENCES temporadas(id_temporada)
+CREATE TABLE player_squad_numbers (
+    id_squad_number INT AUTO_INCREMENT PRIMARY KEY,
+    id_player INT,
+    id_season INT,
+    squad_number INT,
+    FOREIGN KEY (id_player) REFERENCES players(id_player),
+    FOREIGN KEY (id_season) REFERENCES seasons(id_season)
 );
 
-CREATE TABLE partidos (
-    id_partido INT AUTO_INCREMENT PRIMARY KEY,
-    id_temporada INT,
-    fecha DATETIME NOT NULL,
-    competicion VARCHAR(100),
-    rival VARCHAR(100),
-    local_visitante ENUM('local', 'visitante'),
-    goles_favor INT,
-    goles_contra INT,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_temporada) REFERENCES temporadas(id_temporada)
+CREATE TABLE matches (
+    id_match INT AUTO_INCREMENT PRIMARY KEY,
+    id_season INT,
+    date DATETIME NOT NULL,
+    competition VARCHAR(100),
+    opponent VARCHAR(100),
+    venue ENUM('home', 'away'),
+    goals_for INT,
+    goals_against INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_season) REFERENCES seasons(id_season)
 );
 
-CREATE TABLE estadisticas_jugador_partido (
-    id_estadistica INT AUTO_INCREMENT PRIMARY KEY,
-    id_partido INT,
-    id_jugador INT,
-    posicion_jugada VARCHAR(10),
-    minutos_jugados INT,
-    goles INT DEFAULT 0,
-    asistencias INT DEFAULT 0,
-    tiros_totales INT DEFAULT 0,
-    tiros_a_puerta INT DEFAULT 0,
+CREATE TABLE player_match_stats (
+    id_stat INT AUTO_INCREMENT PRIMARY KEY,
+    id_match INT,
+    id_player INT,
+    played_position VARCHAR(10),
+    minutes_played INT,
+    goals INT DEFAULT 0,
+    助攻 INT DEFAULT 0, -- Se usa 'assists' en el mapeo final
+    assists INT DEFAULT 0,
+    shots INT DEFAULT 0,
+    shots_on_target INT DEFAULT 0,
     xg FLOAT DEFAULT 0,
     xa FLOAT DEFAULT 0,
-    asistencias_tiro INT DEFAULT 0,
-    asistencias_segunda INT DEFAULT 0,
-    pases_totales INT DEFAULT 0,
-    pases_completados INT DEFAULT 0,
-    pases_largos_totales INT DEFAULT 0,
-    pases_largos_completados INT DEFAULT 0,
-    pases_al_area_totales INT DEFAULT 0,
-    pases_al_area_completados INT DEFAULT 0,
-    pases_profundidad_totales INT DEFAULT 0,
-    pases_profundidad_completados INT DEFAULT 0,
-    pases_hacia_delante_totales INT DEFAULT 0,
-    pases_hacia_delante_completados INT DEFAULT 0,
-    pases_hacia_atras_totales INT DEFAULT 0,
-    pases_hacia_atras_completados INT DEFAULT 0,
-    pases_recibidos INT DEFAULT 0,
-    regates_totales INT DEFAULT 0,
-    regates_exitosos INT DEFAULT 0,
-    carreras_profundidad INT DEFAULT 0,
-    duelos_totales INT DEFAULT 0,
-    duelos_ganados INT DEFAULT 0,
-    duelos_defensivos_totales INT DEFAULT 0,
-    duelos_defensivos_ganados INT DEFAULT 0,
-    duelos_ofensivos_totales INT DEFAULT 0,
-    duelos_ofensivos_ganados INT DEFAULT 0,
-    duelos_aereos_totales INT DEFAULT 0,
-    duelos_aereos_ganados INT DEFAULT 0,
-    intercepciones INT DEFAULT 0,
-    despejes INT DEFAULT 0,
-    balones_recuperados_campo_rival INT DEFAULT 0,
-    balones_perdidos_campo_propio INT DEFAULT 0,
-    tarjeta_amarilla TINYINT(1) DEFAULT 0,
-    tarjeta_roja TINYINT(1) DEFAULT 0,
-    archivo_origen VARCHAR(255),
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
-    FOREIGN KEY (id_jugador) REFERENCES jugadores(id_jugador)
+    key_passes INT DEFAULT 0,
+    secondary_assists INT DEFAULT 0,
+    total_passes INT DEFAULT 0,
+    accurate_passes INT DEFAULT 0,
+    long_passes INT DEFAULT 0,
+    accurate_long_passes INT DEFAULT 0,
+    passes_to_final_third INT DEFAULT 0,
+    accurate_passes_to_final_third INT DEFAULT 0,
+    through_passes INT DEFAULT 0,
+    accurate_through_passes INT DEFAULT 0,
+    forward_passes INT DEFAULT 0,
+    accurate_forward_passes INT DEFAULT 0,
+    backward_passes INT DEFAULT 0,
+    accurate_backward_passes INT DEFAULT 0,
+    received_passes INT DEFAULT 0,
+    dribbles INT DEFAULT 0,
+    successful_dribbles INT DEFAULT 0,
+    progressive_runs INT DEFAULT 0,
+    duels INT DEFAULT 0,
+    duels_won INT DEFAULT 0,
+    defensive_duels INT DEFAULT 0,
+    defensive_duels_won INT DEFAULT 0,
+    offensive_duels INT DEFAULT 0,
+    offensive_duels_won INT DEFAULT 0,
+    aerial_duels INT DEFAULT 0,
+    aerial_duels_won INT DEFAULT 0,
+    interceptions INT DEFAULT 0,
+    clearances INT DEFAULT 0,
+    recoveries_opp_half INT DEFAULT 0,
+    losses_own_half INT DEFAULT 0,
+    yellow_card TINYINT(1) DEFAULT 0,
+    red_card TINYINT(1) DEFAULT 0,
+    source_file VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_match) REFERENCES matches(id_match),
+    FOREIGN KEY (id_player) REFERENCES players(id_player)
 );
 
-CREATE TABLE configuraciones_pesos (
-    id_configuracion INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_configuracion VARCHAR(100),
-    activa TINYINT(1) DEFAULT 0,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE weight_configs (
+    id_config INT AUTO_INCREMENT PRIMARY KEY,
+    config_name VARCHAR(100),
+    is_active TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE puntuaciones (
-    id_puntuacion INT AUTO_INCREMENT PRIMARY KEY,
-    id_partido INT,
-    id_jugador INT,
-    posicion_evaluada VARCHAR(10),
-    puntuacion_ataque FLOAT,
-    puntuacion_construccion FLOAT,
-    puntuacion_defensa FLOAT,
-    factor_minutos FLOAT,
-    puntuacion_final FLOAT,
-    explicacion_positiva TEXT,
-    explicacion_negativa TEXT,
-    version_modelo VARCHAR(20),
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
-    FOREIGN KEY (id_jugador) REFERENCES jugadores(id_jugador)
+CREATE TABLE scores (
+    id_score INT AUTO_INCREMENT PRIMARY KEY,
+    id_match INT,
+    id_player INT,
+    evaluated_position VARCHAR(10),
+    attack_score FLOAT,
+    build_up_score FLOAT,
+    defense_score FLOAT,
+    minutes_factor FLOAT,
+    final_score FLOAT,
+    positive_feedback TEXT,
+    negative_feedback TEXT,
+    model_version VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_match) REFERENCES matches(id_match),
+    FOREIGN KEY (id_player) REFERENCES players(id_player)
 );
 
-CREATE TABLE lesiones (
-    id_lesion INT AUTO_INCREMENT PRIMARY KEY,
-    id_jugador INT,
-    fecha_inicio DATE NOT NULL,
-    fecha_fin DATE,
-    tipo_lesion VARCHAR(100),
-    gravedad VARCHAR(50),
-    fecha_prevista_retorno DATE,
-    observaciones TEXT,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_jugador) REFERENCES jugadores(id_jugador)
+CREATE TABLE injuries (
+    id_injury INT AUTO_INCREMENT PRIMARY KEY,
+    id_player INT,
+    start_date DATE NOT NULL,
+    end_date DATE,
+    injury_type VARCHAR(100),
+    severity VARCHAR(50),
+    expected_return_date DATE,
+    observations TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_player) REFERENCES players(id_player)
 );
 
-CREATE TABLE pesos_bloque_posicion (
-    id_peso INT AUTO_INCREMENT PRIMARY KEY,
-    id_configuracion INT,
-    codigo_posicion VARCHAR(10),
-    porcentaje_ataque FLOAT,
-    porcentaje_construccion FLOAT,
-    porcentaje_defensa FLOAT,
-    FOREIGN KEY (id_configuracion) REFERENCES configuraciones_pesos(id_configuracion),
-    FOREIGN KEY (codigo_posicion) REFERENCES posiciones(codigo_posicion)
+CREATE TABLE position_block_weights (
+    id_block_weight INT AUTO_INCREMENT PRIMARY KEY,
+    id_config INT,
+    position_code VARCHAR(10),
+    attack_percentage FLOAT,
+    build_up_percentage FLOAT,
+    defense_percentage FLOAT,
+    FOREIGN KEY (id_config) REFERENCES weight_configs(id_config),
+    FOREIGN KEY (position_code) REFERENCES positions(position_code)
 );
 
-CREATE TABLE pesos_metrica_posicion (
-    id_peso_metrica INT AUTO_INCREMENT PRIMARY KEY,
-    id_configuracion INT,
-    codigo_posicion VARCHAR(10),
-    bloque ENUM('ataque', 'construccion', 'defensa'),
-    clave_metrica VARCHAR(50),
-    porcentaje FLOAT,
-    penaliza TINYINT(1) DEFAULT 0,
-    FOREIGN KEY (id_configuracion) REFERENCES configuraciones_pesos(id_configuracion),
-    FOREIGN KEY (codigo_posicion) REFERENCES posiciones(codigo_posicion)
+CREATE TABLE position_metric_weights (
+    id_metric_weight INT AUTO_INCREMENT PRIMARY KEY,
+    id_config INT,
+    position_code VARCHAR(10),
+    block ENUM('attack', 'build_up', 'defense'),
+    metric_key VARCHAR(50),
+    percentage FLOAT,
+    is_penalty TINYINT(1) DEFAULT 0,
+    FOREIGN KEY (id_config) REFERENCES weight_configs(id_config),
+    FOREIGN KEY (position_code) REFERENCES positions(position_code)
 );
 
-CREATE TABLE notas_entrenador (
-    id_nota INT AUTO_INCREMENT PRIMARY KEY,
-    id_partido INT,
-    id_jugador INT,
-    nota FLOAT,
-    comentario TEXT,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_partido) REFERENCES partidos(id_partido),
-    FOREIGN KEY (id_jugador) REFERENCES jugadores(id_jugador)
+CREATE TABLE coach_notes (
+    id_note INT AUTO_INCREMENT PRIMARY KEY,
+    id_match INT,
+    id_player INT,
+    rating FLOAT,
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_match) REFERENCES matches(id_match),
+    FOREIGN KEY (id_player) REFERENCES players(id_player)
 );
