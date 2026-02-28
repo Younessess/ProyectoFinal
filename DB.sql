@@ -174,3 +174,50 @@ CREATE TABLE coach_notes (
     FOREIGN KEY (id_match) REFERENCES matches(id_match),
     FOREIGN KEY (id_player) REFERENCES players(id_player)
 );
+
+
+-- Ejemplos para probar los endpoints de la primera fase
+
+-- 1. INSERTAR TEMPORADA (Requisito para Partidos y Dorsales) [cite: 99, 119]
+INSERT INTO seasons (name, start_date, end_date, is_active) 
+VALUES ('Temporada 2025/26', '2025-08-15', '2026-06-15', 1);
+
+-- 2. INSERTAR POSICIONES (Catálogo base según el PDF) [cite: 98, 118]
+INSERT INTO positions (position_code, position_name, line) VALUES 
+('GK', 'Goalkeeper', 'defense'),
+('CB', 'Center Back', 'defense'),
+('LB', 'Left Back', 'defense'),
+('CM', 'Central Midfielder', 'midfield'),
+('RW', 'Right Wing', 'attack'),
+('ST', 'Striker', 'attack');
+
+-- 3. INSERTAR JUGADORES (CRUD Completo) [cite: 53, 118]
+INSERT INTO players (first_name, last_name, nickname, usual_position, status) VALUES 
+('Lamine', 'Yamal', 'Lamine', 'RW', 'active'),
+('Robert', 'Lewandowski', 'Lewy', 'ST', 'active'),
+('Ronald', 'Araújo', NULL, 'CB', 'injured'),
+('Pedro', 'González', 'Pedri', 'CM', 'active'),
+('Pau', 'Cubarsí', NULL, 'CB', 'active'),
+('Pablo', 'Páez', 'Gavi', 'CM', 'injured');
+
+-- 4. INSERTAR DORSALES (Vinculados a Jugador y Temporada) 
+INSERT INTO player_squad_numbers (id_player, id_season, squad_number) VALUES 
+(1, 1, 19), -- Lamine
+(2, 1, 9),  -- Lewy
+(3, 1, 4),  -- Araújo
+(4, 1, 8),  -- Pedri
+(5, 1, 2);  -- Cubarsí
+
+-- 5. INSERTAR PARTIDOS (Alta de partidos Semanas 1-2) [cite: 72, 118]
+INSERT INTO matches (id_season, date, competition, opponent, venue, goals_for, goals_against) VALUES 
+(1, '2026-02-15 21:00:00', 'La Liga', 'Real Madrid', 'home', 2, 1),
+(1, '2026-02-22 18:30:00', 'Champions League', 'Bayern Munich', 'away', 1, 1);
+
+-- 6. INSERTAR LESIONES (Módulo inicial de lesiones) [cite: 101, 119]
+-- Ronald Araújo (ID 3) con lesión activa
+INSERT INTO injuries (id_player, start_date, injury_type, severity, expected_return_date, observations) 
+VALUES (3, '2026-02-10', 'Rotura de fibras', 'Alta', '2026-03-20', 'Lesión en el isquiotibial izquierdo.');
+
+-- Gavi (ID 6) con lesión activa
+INSERT INTO injuries (id_player, start_date, injury_type, severity, expected_return_date, observations) 
+VALUES (6, '2026-02-25', 'Rotura cruzado', 'Alta', '2026-09-01', 'En proceso de recuperación larga.');
