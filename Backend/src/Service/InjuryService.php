@@ -33,6 +33,7 @@ class InjuryService {
             return new \App\DTO\InjuryDTO(
                 $row['id_injury'],
                 $row['id_player'],
+                $row['name_player'],
                 $row['start_date'],
                 $row['end_date'],
                 $row['injury_type'],

@@ -1,0 +1,6 @@
+@import "tailwindcss"; /* Esta línea es el motor de todo */
+
+@theme {
+  --color-arenas-red: #dc2626;
+  --color-arenas-black: #000000;
+}

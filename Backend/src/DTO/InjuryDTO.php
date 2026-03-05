@@ -4,6 +4,7 @@ namespace App\DTO;
 class InjuryDTO {
     public ?int $id;
     public int $id_player;
+    public string $name_player;
     public string $startDate;
     public ?string $endDate;
     public string $type;
@@ -11,9 +12,10 @@ class InjuryDTO {
     public ?string $expectedReturn;
     public ?string $observations;
 
-    public function __construct($id, $player, $start, $end, $type, $sev, $ret, $obs) {
+    public function __construct($id, $id_player, $name_player, $start, $end, $type, $sev, $ret, $obs) {
         $this->id = $id;
-        $this->id_player = $player;
+        $this->id_player = $id_player;
+        $this->name_player = $name_player;
         $this->startDate = $start;
         $this->endDate = $end;
         $this->type = $type ?? 'No especificado';
@@ -26,6 +28,7 @@ class InjuryDTO {
         return [
             'id_injury' => $this->id,
             'id_player' => $this->id_player,
+            'name_player' => $this->name_player,
             'start_date' => $this->startDate,
             'end_date' => $this->endDate,
             'injury_type' => $this->type,

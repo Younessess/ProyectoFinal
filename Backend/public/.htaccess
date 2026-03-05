@@ -1,0 +1,10 @@
+RewriteEngine On
+# Ajusta esta línea al nombre exacto de tu carpeta en htdocs
+RewriteBase /futbol-analytics/Backend/public/
+
+# Si el archivo o carpeta existe, lo abre (ej: una imagen)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Si no existe, manda todo al Index.php
+RewriteRule ^(.*)$ Index.php [QSA,L]

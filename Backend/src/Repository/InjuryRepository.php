@@ -13,7 +13,20 @@ class InjuryRepository {
     }
 
     public function getAllActive(): array {
-        $stmt = $this->db->query("SELECT * FROM injuries WHERE end_date IS NULL ORDER BY start_date DESC");
+        $stmt = $this->db->query("SELECT 
+    i.id_injury, 
+    i.id_player, 
+    CONCAT(p.first_name, ' ', p.last_name) AS name_player, 
+    i.start_date, 
+    i.end_date, 
+    i.injury_type, 
+    i.severity, 
+    i.expected_return_date, 
+    i.observations
+FROM injuries i
+JOIN players p ON i.id_player = p.id_player
+WHERE i.end_date IS NULL
+ORDER BY i.start_date DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

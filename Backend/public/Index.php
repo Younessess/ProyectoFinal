@@ -12,6 +12,21 @@ use App\Controller\MatchController;
 use App\Controller\SeasonController;
 use App\Controller\InjuryController;
 
+// 1. Permitir cualquier origen (o puedes poner http://localhost:5173)
+header("Access-Control-Allow-Origin: *");
+
+// 2. Permitir los métodos que usa tu API
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+
+// 3. Permitir encabezados específicos (como Content-Type para JSON)
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+
+// 4. Manejar la petición "preflight" OPTIONS que hace el navegador
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 
 // 2. Iniciar sesión para el control de roles
 if (session_status() === PHP_SESSION_NONE) {
@@ -19,6 +34,12 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $router = new Router();
+
+$method = $_SERVER['REQUEST_METHOD'];
+$uri = $_SERVER['REQUEST_URI'];
+
+$basePath = '/futbol-analytics/Backend/public';
+$uri = str_replace($basePath, '', $uri);
 
 /**
  * RUTAS API
@@ -66,4 +87,4 @@ $router->add('GET', '/injuries/active', [InjuryController::class, 'getActiveInju
 $router->add('PUT', '/injuries/close', [InjuryController::class, 'close']);
 
 // 3. Ejecutar
-$router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+$router->dispatch($method, $uri);
