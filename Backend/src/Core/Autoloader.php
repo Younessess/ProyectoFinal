@@ -1,7 +1,7 @@
 <?php
-
+// la función siguiente es propia a php para evitar usar muchos rquire_once o include
 spl_autoload_register(function ($class) {
-    // 1. Definimos el prefijo del proyecto (Namespace)
+    // 1. Definimos el prefijo del proyecto (Namespace) para que php no intenta cargar clases externas solo va a cargar las clases que tienen como namespace App
     $prefix = 'App\\';
     
     // 2. ¿La clase usa nuestro prefijo?

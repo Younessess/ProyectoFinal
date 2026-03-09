@@ -65,7 +65,6 @@ $router->add('GET', '/players/{id}', [PlayerController::class, 'getPlayerById'])
 $router->add('POST', '/players', [PlayerController::class, 'createPlayer']);
 $router->add('PUT', '/players/{id}', [PlayerController::class, 'updatePlayer']);
 $router->add('DELETE', '/players/{id}', [PlayerController::class, 'deletePlayer']);
-
 // Estas son las que dejarás definitivas (coméntalas si te dan problemas ahora)
 // $router->add('GET', '/players', [PlayerController::class, 'getAllPlayers'], ['auth' => true]);
 // Rutas para partidos

@@ -113,8 +113,8 @@ class AuthService {
         return self::hasRole(Role::COACH);
     }
 
-    public static function isAnalyst(): bool {
-        return self::hasRole(Role::ANALYST);
+    public static function isMedical(): bool {
+        return self::hasRole(Role::MEDICAL);
     }
 
     /**
