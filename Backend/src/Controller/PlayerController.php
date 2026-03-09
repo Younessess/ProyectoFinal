@@ -23,6 +23,11 @@ class PlayerController {
         $p ? $this->jsonResponse($p->toArray()) : $this->jsonResponse(['error' => 'Not found'], 404);
     }
 
+    public function getPlayerDetails($id) {
+        $details = $this->service->getPlayerDetails((int)$id);
+        $details ? $this->jsonResponse($details) : $this->jsonResponse(['error' => 'Not found'], 404);
+    }
+
     public function createPlayer() {
         $data = json_decode(file_get_contents('php://input'), true);
         $this->service->createPlayer($data) ? $this->jsonResponse(['msg' => 'Created'], 201) : $this->jsonResponse(['error' => 'Fail'], 400);

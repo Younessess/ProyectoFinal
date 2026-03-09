@@ -11,6 +11,7 @@ class Player {
     private ?string $usual_position;
     private string $status;
     private DateTime $created_at;
+    private ?int $squad_number = null;
 
     public function __construct(?int $id, string $fname, string $lname, ?string $nick, ?string $pos, string $status = 'active', ?DateTime $created = null) {
         $this->id_player = $id;
@@ -30,6 +31,7 @@ class Player {
     public function getUsualPosition(): ?string { return $this->usual_position; }
     public function getStatus(): string { return $this->status; }
     public function getCreatedAt(): DateTime { return $this->created_at; }
+    public function getSquadNumber(): ?int { return $this->squad_number; }
 
     // Setters (Para el Update)
     public function setFirstName(string $name): void { $this->first_name = $name; }
@@ -37,4 +39,5 @@ class Player {
     public function setNickname(?string $nick): void { $this->nickname = $nick; }
     public function setUsualPosition(?string $pos): void { $this->usual_position = $pos; }
     public function setStatus(string $status): void { $this->status = $status; }
+    public function setSquadNumber(?int $number): void { $this->squad_number = $number; }
 }

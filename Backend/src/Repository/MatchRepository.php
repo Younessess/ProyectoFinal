@@ -48,6 +48,32 @@ class MatchRepository {
         ]);
     }
 
+    /**
+     * Crea un partido y devuelve su ID generado, o null en caso de error.
+     */
+    public function createMatchAndReturnId(MatchModel $match): ?int {
+        $sql = "INSERT INTO matches (id_season, date, competition, opponent, venue, goals_for, goals_against) 
+                VALUES (:id_season, :date, :competition, :opponent, :venue, :goals_for, :goals_against)";
+
+        $stmt = $this->db->prepare($sql);
+
+        $ok = $stmt->execute([
+            'id_season'     => $match->getSeasonId(),
+            'date'          => $match->getDate()->format('Y-m-d H:i:s'),
+            'competition'   => $match->getCompetition(),
+            'opponent'      => $match->getOpponent(),
+            'venue'         => $match->getVenue(),
+            'goals_for'     => $match->getGoalsFor(),
+            'goals_against' => $match->getGoalsAgainst()
+        ]);
+
+        if (!$ok) {
+            return null;
+        }
+
+        return (int)$this->db->lastInsertId();
+    }
+
     public function updateMatch(MatchModel $match): bool {
         $sql = "UPDATE matches SET 
                     id_season = :id_season, 

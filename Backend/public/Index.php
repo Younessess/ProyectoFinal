@@ -62,6 +62,7 @@ $router->add('DELETE', '/players/{id}', [PlayerController::class, 'deletePlayer'
 // Estas rutas son solo para verificar que la base de datos devuelve datos
 $router->add('GET', '/players', [PlayerController::class, 'getAllPlayers']);
 $router->add('GET', '/players/{id}', [PlayerController::class, 'getPlayerById']);
+$router->add('GET', '/players/{id}/details', [PlayerController::class, 'getPlayerDetails']);
 $router->add('POST', '/players', [PlayerController::class, 'createPlayer']);
 $router->add('PUT', '/players/{id}', [PlayerController::class, 'updatePlayer']);
 $router->add('DELETE', '/players/{id}', [PlayerController::class, 'deletePlayer']);
@@ -72,6 +73,7 @@ $router->add('DELETE', '/players/{id}', [PlayerController::class, 'deletePlayer'
 $router->add('GET', '/matches', [MatchController::class, 'getAllMatches']);
 $router->add('PUT', '/matches/{id}', [MatchController::class, 'updateMatch']/* , ['auth' => true] */);
 $router->add('POST', '/matches', [MatchController::class, 'createMatch']/* , ['auth' => true] */);
+$router->add('POST', '/matches/{id}/import-stats', [MatchController::class, 'importMatchStats']);
 
 // Rutas para temporadas
 

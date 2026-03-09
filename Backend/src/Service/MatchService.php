@@ -27,7 +27,10 @@ class MatchService {
         }, $matches);
     }
 
-    public function createMatch(array $data): bool {
+    /**
+     * Crea un partido y devuelve su ID (o null si falla).
+     */
+    public function createMatch(array $data): ?int {
         // Aquí podrías añadir validaciones (ej: que la fecha sea válida)
         $match = new MatchModel(
             null,
@@ -40,7 +43,7 @@ class MatchService {
             (int)($data['goals_against'] ?? 0)
         );
 
-        return $this->repo->createMatch($match);
+        return $this->repo->createMatchAndReturnId($match);
     }
     public function updateMatch(int $id, array $data): bool {
         $matchExists = $this->repo->getById($id);
