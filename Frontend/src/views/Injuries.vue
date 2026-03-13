@@ -39,7 +39,7 @@ onMounted(() => {
             
             <tr v-for="injury in injuryStore.injuries" :key="injury.id_injury" class="hover:bg-gray-50 transition">
               <td class="p-4">
-                <p class="font-bold text-gray-900">{{ injury.id_player }} {{ injury.name_player }}</p>
+                <p class="font-bold text-gray-900">{{ injury.name_player }}</p>
               </td>
               <td class="p-4 text-sm text-gray-600">{{ injury.injury_type }}  : {{ injury.observations }}</td>
               <td class="p-4 text-xs font-mono text-gray-500">{{ injury.start_date }}</td>

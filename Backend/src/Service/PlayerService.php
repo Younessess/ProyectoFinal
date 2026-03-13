@@ -186,7 +186,7 @@ class PlayerService {
     }
 
     private function mapToDTO(Player $p): PlayerDTO {
-        return new PlayerDTO($p->getId(), $p->getFirstName(), $p->getLastName(), $p->getNickname(), $p->getUsualPosition(), $p->getStatus());
+        return new PlayerDTO($p->getId(), $p->getFirstName(), $p->getLastName(), $p->getNickname(), $p->getUsualPosition(), $p->getStatus(), $p->getSquadNumber());
     }
 
     private function buildPlayerBasicArrayFromModel(Player $p): array {

@@ -1,109 +1,57 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useMatchStore } from '../stores/matchStore'
+import { useMatchStore } from '../Stores/matchStore'
+import {useSeasonStore} from '../Stores/seasonStore'
 
 const matchStore = useMatchStore()
-const API_BASE = 'http://localhost/futbol-analytics/Backend/public'
+const seasonStore = useSeasonStore()
 
-const showImportDialog = ref(false)
-const importLoading = ref(false)
-const importError = ref(null)
+const showCreateDialog = ref(false)
+const isSubmitting = ref(false)
+const errorMessage = ref(null)
 
 const form = ref({
+  id_season: seasonStore.currentSeasonId,
   date: '',
   competition: '',
   opponent: '',
-  venue: 'home'
+  venue: 'home',
+  goals_for: 0,
+  goals_against: 0
 })
-
-const file = ref(null)
-const fileName = ref('Ningún archivo seleccionado')
 
 onMounted(() => matchStore.fetchMatches())
 
-function openImportDialog() {
-  showImportDialog.value = true
-  importError.value = null
-  importLoading.value = false
+function openCreateDialog() {
+  showCreateDialog.value = true
+  errorMessage.value = null
+  isSubmitting.value = false
   form.value = {
+    id_season: seasonStore.currentSeasonId,
     date: '',
     competition: '',
     opponent: '',
-    venue: 'home'
+    venue: 'home',
+    goals_for: 0,
+    goals_against: 0
   }
-  file.value = null
 }
 
-function closeImportDialog() {
-  showImportDialog.value = false
+function closeCreateDialog() {
+  showCreateDialog.value = false
 }
 
-function handleFileChange(event) {
-  const files = event.target.files
-  file.value = files && files[0] ? files[0] : null
-  fileName.value = file.value ? file.value.name : 'Ningún archivo seleccionado'
-}
-
-async function submitImport() {
-  if (!file.value) {
-    importError.value = 'Selecciona un archivo Excel antes de continuar.'
-    return
-  }
-
-  importLoading.value = true
-  importError.value = null
-
+async function saveMatch() {
+  isSubmitting.value = true
+  errorMessage.value = null
+  
   try {
-    // 1) Crear el partido
-    const matchPayload = {
-      id_season: 1, // por ahora, temporada activa fija
-      date: form.value.date,
-      competition: form.value.competition,
-      opponent: form.value.opponent,
-      venue: form.value.venue,
-      goals_for: 0,
-      goals_against: 0
-    }
-
-    const createRes = await fetch(`${API_BASE}/matches`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(matchPayload)
-    })
-
-    if (!createRes.ok) {
-      throw new Error('Error al crear el partido')
-    }
-
-    const created = await createRes.json()
-    const matchId = created.id_match
-
-    if (!matchId) {
-      throw new Error('El servidor no devolvió el ID del partido')
-    }
-
-    // 2) Enviar el archivo para importar estadísticas sin procesar
-    const formData = new FormData()
-    formData.append('file', file.value)
-
-    const importRes = await fetch(`${API_BASE}/matches/${matchId}/import-stats`, {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!importRes.ok) {
-      throw new Error('Error al importar el archivo de estadísticas')
-    }
-
-    // Refrescar la lista de partidos y cerrar el diálogo
-    await matchStore.fetchMatches()
-    closeImportDialog()
-  } catch (e) {
-    importError.value = e.message || 'Ha ocurrido un error al registrar el partido.'
+    await matchStore.addMatch(form.value)
+    closeCreateDialog()
+  } catch (error) {
+    errorMessage.value = "Error al guardar el marcador del partido"
   } finally {
-    importLoading.value = false
+    isSubmitting.value = false
   }
 }
 </script>
@@ -117,10 +65,10 @@ async function submitImport() {
       <button
         class="bg-arenas-red text-white px-4 py-2 rounded-lg hover:opacity-90 transition font-bold text-sm flex items-center gap-2"
         type="button"
-        @click="openImportDialog"
+        @click="openCreateDialog"
       >
         <span class="text-lg">＋</span>
-        REGISTRAR PARTIDO
+        NUEVO PARTIDO
       </button>
     </div>
 
@@ -137,9 +85,7 @@ async function submitImport() {
         </thead>
         <tbody class="divide-y divide-gray-100">
           <tr v-for="match in matchStore.matches" :key="match.id_match" class="hover:bg-gray-50">
-            <td class="p-4 text-sm font-medium">
-              {{ new Date(match.date).toLocaleDateString() }}
-            </td>
+            <td class="p-4 text-sm font-medium">{{ new Date(match.date).toLocaleDateString() }}</td>
             <td class="p-4">
               <span class="bg-gray-100 px-2 py-1 rounded text-xs font-bold text-arenas-black">
                 {{ match.competition }}
@@ -152,13 +98,9 @@ async function submitImport() {
             <td class="p-4 text-center">
               <span
                 class="text-lg font-black"
-                :class="match.goals_for > match.goals_against
-                  ? 'text-green-600'
-                  : match.goals_for < match.goals_against
-                    ? 'text-arenas-red'
-                    : 'text-arenas-black'"
+                :class="match.goals_for > match.goals_against ? 'text-green-600' : match.goals_for < match.goals_against ? 'text-arenas-red' : 'text-arenas-black'"
               >
-                {{ match.goals_for }} - {{ match.goals_against }}
+                {{ match.result}}
               </span>
             </td>
             <td class="p-4 text-xs text-gray-500 uppercase font-bold">
@@ -169,131 +111,72 @@ async function submitImport() {
       </table>
     </div>
 
-    <!-- Diálogo para registrar partido e importar Excel -->
-    <div
-      v-if="showImportDialog"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
-    >
+    <div v-if="showCreateDialog" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div class="bg-white rounded-xl shadow-2xl w-full max-w-xl mx-4 overflow-hidden">
         <div class="px-5 py-4 border-b flex items-center justify-between bg-arenas-black">
-          <h3 class="text-lg font-semibold text-white">
-            Registrar partido e importar Excel
-          </h3>
-          <button
-            type="button"
-            class="text-white hover:text-gray-200 text-xl font-bold"
-            @click="closeImportDialog"
-          >
-            ×
-          </button>
+          <h3 class="text-lg font-semibold text-white">Registrar nuevo encuentro</h3>
+          <button type="button" class="text-white hover:text-gray-200 text-xl font-bold" @click="closeCreateDialog">×</button>
         </div>
 
-        <form @submit.prevent="submitImport">
+        <form @submit.prevent="saveMatch">
           <div class="px-5 py-4 space-y-4">
-            <p class="text-xs text-gray-500">
-              Primero se registrará el partido con los datos básicos y después se subirá el archivo Excel
-              con las estadísticas sin procesar.
-            </p>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-arenas-black mb-1">
-                  Fecha y hora
-                </label>
-                <input
-                  v-model="form.date"
-                  type="datetime-local"
-                  class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-arenas-red focus:border-arenas-red"
-                  required
-                />
+                <label class="block text-xs font-semibold text-arenas-black mb-1">Fecha</label>
+                <input v-model="form.date" type="date" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-arenas-red" required />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-arenas-black mb-1">
-                  Competición
-                </label>
-                <input
-                  v-model="form.competition"
-                  type="text"
-                  class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-arenas-red focus:border-arenas-red"
-                  placeholder="Ej: La Liga"
-                  required
-                />
+                <label class="block text-xs font-semibold text-arenas-black mb-1">Competición</label>
+                <input v-model="form.competition" type="text" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-arenas-red" required />
               </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label class="block text-xs font-semibold text-arenas-black mb-1">
-                  Rival
-                </label>
-                <input
-                  v-model="form.opponent"
-                  type="text"
-                  class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-arenas-red focus:border-arenas-red"
-                  placeholder="Ej: Real Madrid"
-                  required
-                />
+                <label class="block text-xs font-semibold text-arenas-black mb-1">Equipo Rival</label>
+                <input v-model="form.opponent" type="text" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-arenas-red" required />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-arenas-black mb-1">
-                  Campo
-                </label>
-                <select
-                  v-model="form.venue"
-                  class="w-full border rounded-md px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-arenas-red focus:border-arenas-red"
-                  required
-                >
-                  <option value="home">Casa</option>
-                  <option value="away">Fuera</option>
+                <label class="block text-xs font-semibold text-arenas-black mb-1">Sede</label>
+                <select v-model="form.venue" class="w-full border rounded-md px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-arenas-red">
+                  <option value="home">Casa (Gobela)</option>
+                  <option value="away">Visitante</option>
                 </select>
               </div>
             </div>
 
-            <div>
-              <label class="block text-xs font-semibold text-arenas-black mb-1">
-                Archivo Excel del partido
-              </label>
-              <div class="flex items-center gap-3">
-                <label
-                  class="inline-flex items-center px-3 py-2 rounded-md text-sm font-semibold bg-arenas-red text-white cursor-pointer hover:opacity-90"
-                >
-                  Seleccionar archivo
-                  <input
-                    type="file"
-                    accept=".xlsx,.xls,.csv"
-                    class="hidden"
-                    @change="handleFileChange"
-                  />
-                </label>
-                <span class="text-xs text-gray-600 truncate max-w-[220px]">
-                  {{ fileName }}
-                </span>
+            <div class="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+              <div>
+                <label class="block text-xs font-bold text-arenas-red uppercase mb-1">Goles Arenas</label>
+                <input 
+                  v-model.number="form.goals_for" 
+                  type="number" 
+                  min="0"
+                  class="w-full border rounded-md px-3 py-2 text-center font-bold text-lg focus:ring-2 focus:ring-arenas-red" 
+                  required 
+                />
               </div>
-              <p class="text-xs text-gray-500 mt-1">
-                Se importarán los datos sin procesar; el cálculo de puntuaciones se hará en un paso posterior.
-              </p>
+              <div>
+                <label class="block text-xs font-bold text-arenas-black uppercase mb-1">Goles Rival</label>
+                <input 
+                  v-model.number="form.goals_against" 
+                  type="number" 
+                  min="0"
+                  class="w-full border rounded-md px-3 py-2 text-center font-bold text-lg focus:ring-2 focus:ring-arenas-black" 
+                  required 
+                />
+              </div>
             </div>
 
-            <p v-if="importError" class="text-sm text-arenas-red">
-              {{ importError }}
-            </p>
+            <p v-if="errorMessage" class="text-sm text-arenas-red">{{ errorMessage }}</p>
           </div>
 
           <div class="px-5 py-3 border-t bg-gray-50 flex justify-end gap-2">
-            <button
-              type="button"
-              class="px-3 py-1.5 rounded-md text-sm font-semibold text-arenas-black hover:bg-gray-100"
-              @click="closeImportDialog"
-              :disabled="importLoading"
-            >
+            <button type="button" class="px-3 py-1.5 rounded-md text-sm font-semibold text-arenas-black hover:bg-gray-100" @click="closeCreateDialog">
               Cancelar
             </button>
-            <button
-              type="submit"
-              class="px-3 py-1.5 rounded-md text-sm font-semibold bg-arenas-red text-white hover:opacity-90 disabled:opacity-60"
-              :disabled="importLoading"
-            >
-              {{ importLoading ? 'Registrando...' : 'Registrar e importar' }}
+            <button type="submit" class="px-4 py-1.5 rounded-md text-sm font-semibold bg-arenas-red text-white hover:opacity-90" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Guardando...' : 'Crear Partido' }}
             </button>
           </div>
         </form>

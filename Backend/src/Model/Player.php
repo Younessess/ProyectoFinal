@@ -13,7 +13,7 @@ class Player {
     private DateTime $created_at;
     private ?int $squad_number = null;
 
-    public function __construct(?int $id, string $fname, string $lname, ?string $nick, ?string $pos, string $status = 'active', ?DateTime $created = null) {
+    public function __construct(?int $id, string $fname, string $lname, ?string $nick, ?string $pos, string $status = 'active', ?DateTime $created = null, ?int $squad_number) {
         $this->id_player = $id;
         $this->first_name = $fname;
         $this->last_name = $lname;
@@ -21,6 +21,7 @@ class Player {
         $this->usual_position = $pos;
         $this->status = $status;
         $this->created_at = $created ?? new DateTime();
+        $this->squad_number = $squad_number;
     }
 
     // Getters

@@ -13,7 +13,25 @@ class PlayerRepository {
     }
 
     public function getAll(): array {
-        $stmt = $this->db->query("SELECT * FROM players ORDER BY last_name ASC");
+    $stmt = $this->db->query("SELECT 
+                                p.id_player, 
+                                p.first_name, 
+                                p.last_name, 
+                                p.nickname,
+                                p.usual_position, 
+                                p.status,
+                                p.created_at,
+                                s.squad_number,
+                                s.id_season
+                                FROM players p
+                                LEFT JOIN player_squad_numbers s ON p.id_player = s.id_player 
+                                    AND s.id_season = (
+                                        SELECT id_season 
+                                        FROM seasons 
+                                        WHERE is_active = 1 
+                                        LIMIT 1
+                                    )
+                                ORDER BY p.last_name ASC");
         return array_map(fn($row) => $this->mapRow($row), $stmt->fetchAll());
     }
 
@@ -113,11 +131,8 @@ class PlayerRepository {
         $player = new Player(
             (int)$row['id_player'], $row['first_name'], $row['last_name'],
             $row['nickname'], $row['usual_position'], $row['status'],
-            new \DateTime($row['created_at'])
-        );
-        if (isset($row['squad_number'])) {
-            $player->setSquadNumber((int)$row['squad_number']);
-        }
+            new \DateTime($row['created_at']), $row['squad_number'] !== null ? (int)$row['squad_number'] : null)
+        ;
         return $player;
     }
 }
