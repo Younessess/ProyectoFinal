@@ -54,7 +54,7 @@ const toggleMenu = () => {
         <span>Lesiones</span>
       </router-link>
       <router-link @click="isOpen = false" to="/seasons" class="nav-link" active-class="bg-red-600">
-        <span>Temporadas</span>
+        <span>Administración</span>
       </router-link>
     </nav>
 

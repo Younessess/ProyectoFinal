@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
-import { usePlayerStore } from '../Stores/playerStore'
+import { usePlayerStore } from '../stores/playerStore'
 
 const playerStore = usePlayerStore()
 

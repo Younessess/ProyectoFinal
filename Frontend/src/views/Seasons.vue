@@ -10,7 +10,7 @@ onMounted(() => seasonStore.fetchSeasons())
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <h2 class="text-2xl font-black text-gray-800 uppercase border-l-4 border-arenas-red pl-3">
-        Administración de Temporadas
+        Administración
       </h2>
       <button class="bg-arenas-black text-white px-4 py-2 rounded shadow hover:bg-red-700 transition font-bold">
         + NUEVA TEMPORADA

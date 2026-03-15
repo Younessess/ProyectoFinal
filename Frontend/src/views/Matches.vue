@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useMatchStore } from '../Stores/matchStore'
-import {useSeasonStore} from '../Stores/seasonStore'
+import { useMatchStore } from '../stores/matchStore'
+import {useSeasonStore} from '../stores/seasonStore'
 
 const matchStore = useMatchStore()
 const seasonStore = useSeasonStore()
