@@ -6,7 +6,7 @@ use DateTime;
 class Injury {
     private ?int $id_injury;
     private int $id_player;
-    private string $name_player;
+    private ?string $name_player;
     private DateTime $start_date;
     private ?DateTime $end_date;
     private ?string $injury_type;
@@ -17,7 +17,7 @@ class Injury {
     public function __construct(
         ?int $id, 
         int $id_player,
-        string $name_player,
+        ?string $name_player,
         string $start, 
         ?string $end, 
         ?string $type, 

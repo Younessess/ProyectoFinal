@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useSeasonStore } from '../stores/seasonStore'
+import PlayersList from './PlayersList.vue';
 
 const seasonStore = useSeasonStore()
 onMounted(() => seasonStore.fetchSeasons())
@@ -51,4 +52,5 @@ onMounted(() => seasonStore.fetchSeasons())
       </div>
     </div>
   </div>
+  <players-list :show-actions="true" />
 </template>

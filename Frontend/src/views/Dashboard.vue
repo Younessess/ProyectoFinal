@@ -1,8 +1,12 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { usePlayerStore } from '../stores/playerStore'
+import NewMatch from '@/components/NewMatch.vue'
+import ImportStatsModal from '@/components/ImportStatsModal.vue'
 
 const playerStore = usePlayerStore()
+const showCreateDialog = ref(false)
+const showImportStatsDialog = ref(false)
 
 onMounted(() => {
   // Si la lista está vacía, la cargamos al entrar al Dashboard
@@ -16,7 +20,7 @@ onMounted(() => {
   <div class="space-y-6">
     <h1 class="text-3xl font-black text-gray-800 uppercase">Panel de Control</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-green-500">
         <p class="text-gray-500 font-bold uppercase text-xs">Disponibles</p>
         <p class="text-4xl font-black text-gray-800">{{ playerStore.availableCount }}</p>
@@ -24,10 +28,6 @@ onMounted(() => {
       <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-arenas-red">
         <p class="text-gray-500 font-bold uppercase text-xs">En Enfermería</p>
         <p class="text-4xl font-black text-arenas-red">{{ playerStore.totalInjured }}</p>
-      </div>
-      <div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-black">
-        <p class="text-gray-500 font-bold uppercase text-xs">Próximo Partido</p>
-        <p class="text-xl font-bold text-gray-800">vs SD Leioa</p>
       </div>
     </div>
 
@@ -57,11 +57,13 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="bg-gray-800 rounded-xl shadow-md p-6 text-white flex flex-col justify-center items-center text-center">
-        <img src="../assets/logo.png" alt="Logo Arenas" class="w-24 mb-4 opacity-50">
-        <h3 class="text-xl font-bold mb-2 text-red-500">Arenas Club de Getxo</h3>
-        <p class="text-sm text-gray-400 uppercase tracking-widest">Análisis de Rendimiento</p>
+      <div class="rounded-xl shadow-md p-6 text-white flex flex-col justify-center items-center text-center gap-6">
+        <button @click="showCreateDialog = true" class="bg-black text-white text-xl px-6 py-3 rounded-2xl  hover:bg-red-700 cursor-pointer">Nuevo Partido</button>
+        <button @click="showImportStatsDialog = true" class="bg-black text-white text-xl px-6 py-3 rounded-2xl  hover:bg-red-700 cursor-pointer">Nuevas Estadísticas</button>
       </div>
     </div>
+
+    <NewMatch v-model="showCreateDialog" />
+    <ImportStatsModal v-model="showImportStatsDialog" />
   </div>
 </template>

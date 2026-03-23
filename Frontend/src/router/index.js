@@ -7,7 +7,7 @@ const routes = [
   { path: '/dashboard', component: Dashboard },
   { path: '/players', component: PlayersList },
   { path: '/matches', component: () => import('../views/Matches.vue') },
-  { path: '/seasons', component: () => import('../views/Seasons.vue') },
+  { path: '/seasons', component: () => import('../views/Administration.vue') },
   { path: '/injuries', component: () => import('../views/Injuries.vue') }
 ]
 

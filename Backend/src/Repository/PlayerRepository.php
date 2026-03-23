@@ -122,6 +122,30 @@ class PlayerRepository {
             'n' => $p->getNickname(), 'pos' => $p->getUsualPosition(), 's' => $p->getStatus()
         ]);
     }
+    // función solo para cambiar el estado a active al cerrar lesión
+    public function updateStatus(int $id_player, string $status): bool 
+{
+    // 1. Preparamos la consulta SQL
+    // Asegúrate de que el nombre de la tabla y las columnas coincidan con tu DB (ej: 'players' e 'id_player')
+    $sql = "UPDATE players SET status = :status WHERE id_player = :id";
+    
+    try {
+        // 2. Preparamos la sentencia
+        $stmt = $this->db->prepare($sql);
+        
+        // 3. Ejecutamos pasando los valores mapeados
+        // Retornará true si la consulta se ejecutó correctamente
+        return $stmt->execute([
+            'status' => $status,
+            'id'     => $id_player
+        ]);
+        
+    } catch (\PDOException $e) {
+        // Opcional: Loguear el error si algo falla a nivel de base de datos
+        error_log("Error en PlayerRepository::updateStatus - " . $e->getMessage());
+        return false;
+    }
+}
 
     public function delete(int $id): bool {
         return $this->db->prepare("DELETE FROM players WHERE id_player = :id")->execute(['id' => $id]);

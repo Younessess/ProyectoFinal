@@ -44,6 +44,9 @@ class InjuryController {
                 http_response_code(400);
                 echo json_encode(['error' => 'Could not complete the closure']);
             }
+        } else {
+            http_response_code(400);
+            echo json_encode(['error' => 'Missing required fields for closing an injury.']);
         }
     }
 }

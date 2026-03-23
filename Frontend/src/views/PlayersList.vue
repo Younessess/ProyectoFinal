@@ -1,7 +1,12 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { usePlayerStore } from '../stores/playerStore'
-
+const props = defineProps({
+  showActions: {
+    type: Boolean,
+    default: false
+  }
+})
 const playerStore = usePlayerStore()
 
 const showDialog = ref(false)
@@ -163,12 +168,67 @@ async function saveEdit() {
     editLoading.value = false
   }
 }
+
+// Lógica de importación de estadísticas (API de Python) usando diálogo
+const showImportStatsDialog = ref(false)
+const playerToImport = ref(null)
+const selectedFile = ref(null)
+const isUploadingStats = ref(false)
+const importStatsError = ref(null)
+
+function openImportStatsDialog(player) {
+  playerToImport.value = player
+  selectedFile.value = null
+  importStatsError.value = null
+  showImportStatsDialog.value = true
+}
+
+function closeImportStatsDialog() {
+  showImportStatsDialog.value = false
+}
+
+function onFileSelected(event) {
+  selectedFile.value = event.target.files[0]
+}
+
+async function handleImportStatsSubmit() {
+  if (!selectedFile.value || !playerToImport.value) {
+    importStatsError.value = 'Por favor, selecciona un archivo Excel primero.'
+    return
+  }
+
+  isUploadingStats.value = true
+  importStatsError.value = null
+  const formData = new FormData()
+  // Lo enviamos con la key 'file' y 'id_player' para la API de Python
+  formData.append('file', selectedFile.value)
+  formData.append('id_player', playerToImport.value.id_player)
+
+  try {
+    // API de Python (ej: FastAPI en puerto 5000)
+    const response = await fetch(`http://localhost:5000/api/import-player-stats`, {
+      method: 'POST',
+      body: formData
+    })
+    
+    if (!response.ok) {
+      throw new Error('Error en la API de Python al procesar el Excel')
+    }
+    
+    alert(`El archivo de ${playerToImport.value.first_name} se envió a procesar correctamente.`)
+    closeImportStatsDialog()
+  } catch (e) {
+    importStatsError.value = `No se pudo conectar con la API de Python o devolvió error: ${e.message}`
+  } finally {
+    isUploadingStats.value = false
+  }
+}
 </script>
 
 <template>
   <div class="p-6">
     <h2 class="text-2xl font-bold text-arenas-black mb-4 border-b-2 border-arenas-red inline-block pb-1">Lista de Jugadores</h2>
-    
+
     <div v-if="playerStore.loading" class="animate-bounce text-arenas-red">Cargando equipo...</div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -197,7 +257,7 @@ async function saveEdit() {
             >
               {{ player.status === 'active' ? 'Activo' : 'Lesionado / Baja' }}
             </span>
-            <button
+            <button v-if="showActions"
               type="button"
               class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border border-arenas-black text-arenas-black hover:bg-arenas-black hover:text-white"
               @click.stop="openEditDialog(player)"
@@ -205,11 +265,20 @@ async function saveEdit() {
               Editar
             </button>
             <button
+              v-if="showActions"
               type="button"
               class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-arenas-red text-white hover:opacity-90"
               @click.stop="openDeleteDialog(player)"
             >
               Borrar
+            </button>
+            <button
+              v-if="showActions"
+              type="button"
+              class="mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-600 text-white hover:bg-green-700"
+              @click.stop="openImportStatsDialog(player)"
+            >
+              Importar Estadísticas
             </button>
           </div>
         </div>
@@ -611,6 +680,68 @@ async function saveEdit() {
               :disabled="editLoading"
             >
               {{ editLoading ? 'Guardando...' : 'Guardar cambios' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Diálogo para Importar Estadísticas -->
+    <div
+      v-if="showImportStatsDialog"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    >
+      <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+        <div class="px-5 py-4 border-b flex items-center justify-between bg-arenas-black">
+          <h3 class="text-lg font-semibold text-white">
+            Excel de {{ playerToImport?.first_name }} {{ playerToImport?.last_name }}
+          </h3>
+          <button
+            type="button"
+            class="text-white hover:text-gray-200 text-xl font-bold"
+            @click="closeImportStatsDialog"
+          >
+            ×
+          </button>
+        </div>
+        <form @submit.prevent="handleImportStatsSubmit">
+          <div class="px-5 py-6 space-y-4 text-center">
+            
+            <p class="text-sm text-gray-700 mb-4">
+              Selecciona el fichero Excel que contiene las estadísticas del partido para ser procesado por la API de Python.
+            </p>
+            
+            <input
+              type="file"
+              accept=".xlsx, .xls, .csv"
+              class="w-full border rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-arenas-red"
+              @change="onFileSelected"
+            />
+            
+            <p v-if="selectedFile" class="text-xs text-green-600 font-bold mt-2">
+              Archivo listo: {{ selectedFile.name }}
+            </p>
+
+            <p v-if="importStatsError" class="text-sm text-arenas-red font-semibold mt-2">
+              {{ importStatsError }}
+            </p>
+          </div>
+
+          <div class="px-5 py-3 border-t bg-gray-50 flex justify-end gap-2">
+            <button
+              type="button"
+              class="px-3 py-1.5 rounded-md text-sm font-semibold text-arenas-black hover:bg-gray-100"
+              @click="closeImportStatsDialog"
+              :disabled="isUploadingStats"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-1.5 rounded-md text-sm font-semibold bg-arenas-red text-white hover:opacity-90 disabled:opacity-60"
+              :disabled="isUploadingStats"
+            >
+              {{ isUploadingStats ? 'Enviando...' : 'Guardar y Procesar' }}
             </button>
           </div>
         </form>

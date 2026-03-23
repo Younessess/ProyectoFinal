@@ -17,8 +17,15 @@ class InjuryService {
 
     public function registerInjury(array $data): bool {
         $injury = new Injury(
-            null, $data['id_player'], $data['start_date'], null,
-            $data['injury_type'], $data['severity'], $data['expected_return_date'] ?? null, $data['observations'] ?? null
+            null, 
+            $data['id_player'], 
+            null, // name_player (not needed for creation)
+            $data['start_date'], 
+            null, // end_date
+            $data['injury_type'], 
+            $data['severity'], 
+            $data['expected_return_date'] ?? null, 
+            $data['observations'] ?? null
         );
 
         if ($this->injuryRepo->create($injury)) {
