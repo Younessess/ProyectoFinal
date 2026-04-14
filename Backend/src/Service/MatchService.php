@@ -64,4 +64,8 @@ class MatchService {
     
         return $this->repo->updateMatch($updatedMatch);
     }
+
+    public function getMatchDetails(int $id): ?array {
+        return $this->repo->getMatchDetails($id);
+    }
 }

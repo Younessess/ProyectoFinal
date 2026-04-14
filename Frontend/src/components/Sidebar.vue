@@ -53,7 +53,7 @@ const toggleMenu = () => {
       <router-link @click="isOpen = false" to="/injuries" class="nav-link" active-class="bg-red-600">
         <span>Lesiones</span>
       </router-link>
-      <router-link @click="isOpen = false" to="/seasons" class="nav-link" active-class="bg-red-600">
+      <router-link @click="isOpen = false" to="/administracion" class="nav-link" active-class="bg-red-600">
         <span>Administración</span>
       </router-link>
     </nav>

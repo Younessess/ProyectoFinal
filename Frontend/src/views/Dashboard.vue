@@ -47,7 +47,7 @@ onMounted(() => {
                 class="flex justify-between items-center p-3 bg-red-50 border border-red-100 rounded-lg">
               <div>
                 <p class="font-bold text-red-900">{{ player.first_name }} {{ player.last_name }}</p>
-                <p class="text-xs text-red-700">Estado: {{ player.status }}</p>
+                <p class="text-xs text-red-700">Estado: lesionado</p>
               </div>
               <router-link to="/injuries" class="text-xs font-bold text-white bg-red-600 px-3 py-1 rounded hover:bg-red-700">
                 VER FICHA

@@ -708,7 +708,7 @@ async function handleImportStatsSubmit() {
           <div class="px-5 py-6 space-y-4 text-center">
             
             <p class="text-sm text-gray-700 mb-4">
-              Selecciona el fichero Excel que contiene las estadísticas del partido para ser procesado por la API de Python.
+              Selecciona el fichero Excel que contiene las estadísticas del partido
             </p>
             
             <input

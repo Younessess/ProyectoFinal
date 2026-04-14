@@ -221,3 +221,36 @@ VALUES (3, '2026-02-10', 'Rotura de fibras', 'Alta', '2026-03-20', 'Lesión en e
 -- Gavi (ID 6) con lesión activa
 INSERT INTO injuries (id_player, start_date, injury_type, severity, expected_return_date, observations) 
 VALUES (6, '2026-02-25', 'Rotura cruzado', 'Alta', '2026-09-01', 'En proceso de recuperación larga.');
+
+-- 7. INSERTAR ESTADÍSTICAS DE PARTIDO (Datos virtuales para Match 1)
+INSERT INTO player_match_stats (id_match, id_player, played_position, minutes_played, goals, assists) VALUES 
+(1, 1, 'RW', 90, 1, 1),
+(1, 2, 'ST', 85, 1, 0),
+(1, 3, 'CB', 90, 0, 0),
+(1, 4, 'CM', 70, 0, 1),
+(1, 5, 'CB', 90, 0, 0);
+
+-- 8. INSERTAR PUNTUACIONES (Scores calculados virtualmente para Match 1)
+INSERT INTO scores (id_match, id_player, evaluated_position, attack_score, build_up_score, defense_score, minutes_factor, final_score, positive_feedback, negative_feedback) VALUES 
+(1, 1, 'RW', 8.5, 7.2, 4.0, 1.0, 8.1, 'Excelente desborde y gol', 'Debe apoyar más en defensa'),
+(1, 4, 'CM', 7.5, 8.5, 6.0, 0.8, 7.9, 'Visión de juego top', 'Falta de resistencia al final'),
+(1, 3, 'CB', 3.0, 6.5, 9.0, 1.0, 7.8, 'Sólido en el corte', 'Pases arriesgados'),
+(1, 2, 'ST', 8.0, 6.0, 3.5, 0.95, 7.5, 'Buen posicionamiento', 'Poca participación en la creación'),
+(1, 5, 'CB', 2.5, 7.0, 8.5, 1.0, 7.2, 'Buena salida de balón', 'Sufrió a la espalda');
+
+-- 9. INSERTAR ESTADÍSTICAS DE PARTIDO (Datos virtuales para Match 2 - Bayern Munich)
+INSERT INTO player_match_stats (id_match, id_player, played_position, minutes_played, goals, assists) VALUES 
+(2, 1, 'RW', 90, 0, 1),
+(2, 2, 'ST', 90, 1, 0),
+(2, 3, 'CB', 30, 0, 0),
+(2, 4, 'CM', 90, 0, 0),
+(2, 5, 'CB', 90, 0, 0);
+
+-- 10. INSERTAR PUNTUACIONES (Scores calculados virtualmente para Match 2)
+INSERT INTO scores (id_match, id_player, evaluated_position, attack_score, build_up_score, defense_score, minutes_factor, final_score, positive_feedback, negative_feedback) VALUES 
+(2, 2, 'ST', 8.5, 6.0, 4.0, 1.0, 8.0, 'Gol clave del empate', 'Demasiado estático en la primera mitad'),
+(2, 5, 'CB', 2.0, 7.5, 9.5, 1.0, 7.9, 'Imperial en el juego aéreo', 'Asumió demasiados riesgos al salir'),
+(2, 1, 'RW', 7.5, 7.0, 4.5, 1.0, 7.5, 'Desborde constante y asistencia', 'Intermitente por momentos'),
+(2, 4, 'CM', 6.0, 7.5, 5.5, 1.0, 6.8, 'Sólido en posesión', 'Faltó llegada al área rival'),
+(2, 3, 'CB', 2.0, 5.0, 4.5, 0.3, 5.0, 'Buen corte inicial', 'Se lesionó muy pronto');
+

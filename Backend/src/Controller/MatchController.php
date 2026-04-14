@@ -90,4 +90,14 @@ class MatchController {
             'filename' => $safeName
         ], 201);
     }
+
+    public function getMatchDetails(int $id): void {
+        $data = $this->service->getMatchDetails($id);
+        if (!$data) {
+            $this->sendResponse(['error' => 'Match not found'], 404);
+            return;
+        }
+
+        $this->sendResponse($data, 200);
+    }
 }

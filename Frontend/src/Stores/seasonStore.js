@@ -14,7 +14,7 @@ export const useSeasonStore = defineStore('seasonStore', {
         this.seasons = await response.json()
         // Por defecto, seleccionamos la más reciente
         if (this.seasons.length > 0) {
-          this.currentSeasonId = this.seasons[(this.seasons.length - 1)].id_season
+          this.currentSeasonId = this.seasons.find(season => season.start_date <= new Date() && season.end_date >= new Date());
         }
       } catch (error) {
         console.error("Error cargando temporadas:", error)

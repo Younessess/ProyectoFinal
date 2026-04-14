@@ -98,4 +98,55 @@ class MatchRepository {
             'goals_against' => $match->getGoalsAgainst()
         ]);
     }
+
+    /**
+     * Devuelve los detalles de un partido junto con los jugadores 
+     * listados de mayor a menor puntuación final.
+     */
+    public function getMatchDetails(int $id): ?array {
+        $stmt = $this->db->prepare("
+            SELECT m.*, s.name as season_name 
+            FROM matches m 
+            LEFT JOIN seasons s ON s.id_season = m.id_season
+            WHERE m.id_match = :id
+        ");
+        $stmt->execute(['id' => $id]);
+        $match = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$match) {
+            return null;
+        }
+
+        $sql = "
+            SELECT 
+                p.id_player,
+                p.first_name,
+                p.last_name,
+                p.usual_position,
+                s.evaluated_position,
+                s.attack_score,
+                s.build_up_score,
+                s.defense_score,
+                s.minutes_factor,
+                s.final_score,
+                s.positive_feedback,
+                s.negative_feedback,
+                pms.minutes_played,
+                pms.goals,
+                pms.assists
+            FROM scores s
+            JOIN players p ON p.id_player = s.id_player
+            LEFT JOIN player_match_stats pms ON pms.id_match = s.id_match AND pms.id_player = s.id_player
+            WHERE s.id_match = :id
+            ORDER BY s.final_score DESC
+        ";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $players = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'match' => $match,
+            'players' => $players
+        ];
+    }
 }

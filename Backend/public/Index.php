@@ -70,6 +70,7 @@ $router->add('DELETE', '/players/{id}', [PlayerController::class , 'deletePlayer
 // Rutas para partidos
 
 $router->add('GET', '/matches', [MatchController::class , 'getAllMatches']);
+$router->add('GET', '/matches/{id}/details', [MatchController::class, 'getMatchDetails']);
 $router->add('PUT', '/matches/{id}', [MatchController::class , 'updateMatch'] /* , ['auth' => true] */);
 $router->add('POST', '/matches', [MatchController::class , 'createMatch'] /* , ['auth' => true] */);
 $router->add('POST', '/matches/{id}/import-stats', [MatchController::class , 'importMatchStats']);

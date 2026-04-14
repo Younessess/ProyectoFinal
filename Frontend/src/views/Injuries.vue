@@ -50,6 +50,7 @@ async function handleRegisterInjury() {
   try {
     await injuryStore.registerInjury(newInjuryForm.value)
     closeRegisterDialog()
+    playerStore.fetchPlayers()
   } catch(e) {
     registerError.value = e.message
   } finally {
@@ -84,6 +85,7 @@ async function confirmCloseInjury() {
   try {
     await injuryStore.closeInjury(injuryDetails.value)
     showCloseDialog.value = false
+    playerStore.fetchPlayers()
   } catch(e) {
     closeError.value = e.message
   } finally {
@@ -103,7 +105,7 @@ onMounted(() => {
       </h2>
       <button 
         class="bg-arenas-red text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-red-700 transition shadow-lg"
-        @click="openRegisterDialog"
+        @click.prevent="openRegisterDialog"
       >
         + REGISTRAR BAJA MÉDICA
       </button>
